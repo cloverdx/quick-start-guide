@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Graph author="NickTaylor" created="Mon Jun 02 11:58:06 CEST 2025" guiVersion="7.0.0.15" id="1748867819447" licenseCode="CLCDSCLOVE72646208SP" name="EmployeeLoader" nature="restJob" showComponentDetails="true">
+<Global>
+<EndpointSettings>
+<UrlPath>/EmployeeLoader</UrlPath>
+<Description>This app will load into the database any employees with Emergency Contacts, and return employees without&#13;
+&#13;
+</Description>
+<Category>Human Resources</Category>
+<IconUrl>data-service/icons/employees.png</IconUrl>
+<RequestMethod name="GET"/>
+</EndpointSettings>
+<RestJobResponseStatus>
+<JobError>
+<reasonPhrase>Job failed</reasonPhrase>
+<statusCode>500</statusCode>
+<ReasonPhrase>Job failed</ReasonPhrase>
+<StatusCode>500</StatusCode>
+</JobError>
+<Success>
+<statusCode>200</statusCode>
+<StatusCode>200</StatusCode>
+</Success>
+<ValidationError>
+<reasonPhrase>Request validation failed</reasonPhrase>
+<statusCode>400</statusCode>
+<ReasonPhrase>Request validation failed</ReasonPhrase>
+<StatusCode>400</StatusCode>
+</ValidationError>
+</RestJobResponseStatus>
+<Metadata fileURL="${META_DIR}/EmergencyContacts.fmt" id="Metadata1"/>
+<Metadata id="Metadata0">
+<Record fieldDelimiter="|" name="Employees" previewAttachment="${DATAIN_DIR}/Employees.csv" previewAttachmentCharset="UTF-8" quoteChar="both" quotedStrings="false" recordDelimiter="\n" skipSourceRows="1" type="delimited">
+<Field name="id" type="string"/>
+<Field name="name" type="string"/>
+<Field name="address" type="string"/>
+<Field name="city" type="string"/>
+<Field name="zip" type="integer"/>
+<Field name="state" type="string"/>
+<Field name="country" type="string"/>
+<Field name="email" type="string"/>
+<Field name="phone" type="string"/>
+<Field name="hireDate" type="string"/>
+<Field eofAsDelimiter="true" name="department" type="string"/>
+</Record>
+</Metadata>
+<Metadata id="Metadata3">
+<Record fieldDelimiter=";" name="employeesDB" previewAttachmentCharset="UTF-8" recordDelimiter="\n" type="delimited">
+<Field name="id" size="10" type="integer"/>
+<Field name="full_name" type="string"/>
+<Field name="street_address" type="string"/>
+<Field name="city" type="string"/>
+<Field name="postal_code" size="10" type="integer"/>
+<Field name="state" type="string"/>
+<Field name="country" type="string"/>
+<Field name="email" type="string"/>
+<Field name="phone" type="string"/>
+<Field format="yyyy-MM-dd" name="hire_date" size="13" type="date"/>
+<Field name="department" type="string"/>
+<Field name="emergency_contact_phone" type="string"/>
+<Field name="emergency_contact_name" type="string"/>
+<Field format="yyyy-MM-dd" name="emergency_contact_updated" size="13" type="date"/>
+</Record>
+</Metadata>
+<Metadata id="Metadata2" previewAttachment="./data-in/Employees.csv" previewAttachmentCharset="UTF-8">
+<Record fieldDelimiter="|" name="EmployeesEmergencyContacts" previewAttachment="./data-in/Employees.csv" previewAttachmentCharset="UTF-8" recordDelimiter="\n" skipSourceRows="1" type="delimited">
+<Field name="id" trim="true" type="string"/>
+<Field name="name" type="string"/>
+<Field name="address" type="string"/>
+<Field name="city" type="string"/>
+<Field name="zip" trim="true" type="integer"/>
+<Field name="state" type="string"/>
+<Field name="country" type="string"/>
+<Field name="email" type="string"/>
+<Field name="phone" type="string"/>
+<Field name="hireDate" type="string"/>
+<Field eofAsDelimiter="true" name="department" type="string"/>
+<Field name="emergencyContactName" type="string"/>
+<Field name="emergencyContactPhone" type="string"/>
+<Field name="emergencyContactUpdated" type="date"/>
+</Record>
+</Metadata>
+<Connection dbConfig="${CONN_DIR}/postgres.cfg" id="JDBC0" type="JDBC"/>
+<GraphParameters>
+<GraphParameterFile fileURL="workspace.prm"/>
+</GraphParameters>
+<Dictionary/>
+</Global>
+<Phase number="0">
+<Node dbConnection="JDBC0" dbTable="employees" guiName="DatabaseWriter" guiX="775" guiY="25" id="DATABASE_WRITER" type="DB_OUTPUT_TABLE"/>
+<Node fileURL="${DATAIN_DIR}/EmergencyContacts.csv" guiName="Emergency Contact" guiX="200" guiY="200" id="EMERGENCY_CONTACT" type="FLAT_FILE_READER"/>
+<Node fileURL="${DATAIN_DIR}/Employees.csv" guiName="Employees" guiX="200" guiY="25" id="EMPLOYEES" type="FLAT_FILE_READER"/>
+<Node guiName="ExtHashJoin" guiX="400" guiY="25" id="EXT_HASH_JOIN" joinKey="$id=$ID" type="EXT_HASH_JOIN">
+<attr name="transform"><![CDATA[//#CTL2
+
+// Transforms input record into output record.
+function integer transform() {
+	$out.0.* = $in.0.*;
+	$out.0.emergencyContactName = $in.1.EmergencyContact;
+	$out.0.emergencyContactPhone = $in.1.Phone;
+	$out.0.emergencyContactUpdated = $in.1.UpdatedOn;
+
+	return ALL;
+}
+
+// Called during component initialization.
+// function boolean init() {}
+
+// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
+// required by the transform. All resources allocated within this method should be released
+// by the postExecute() method.
+// function void preExecute() {}
+
+// Called only if transform() throws an exception.
+// function integer transformOnError(string errorMessage, string stackTrace) {}
+
+// Called during each graph run after the entire transform was executed. Should be used to free any resources
+// allocated within the preExecute() method.
+// function void postExecute() {}
+
+// Called to return a user-defined error message when an error occurs.
+// function string getMessage() {}
+]]></attr>
+</Node>
+<Node guiName="Map" guiX="600" guiY="25" id="MAP" type="REFORMAT">
+<attr name="transform"><![CDATA[//#CTL2
+
+// Transforms input record into output record.
+function integer transform() {
+	$out.0.* = $in.0.*;
+	$out.0.id = str2integer($in.0.id);
+	$out.0.full_name = $in.0.name;
+	$out.0.street_address = $in.0.address;
+	$out.0.postal_code = $in.0.zip;
+	$out.0.emergency_contact_name = $in.0.emergencyContactName;
+	$out.0.emergency_contact_phone = $in.0.emergencyContactPhone;
+	$out.0.emergency_contact_updated = $in.0.emergencyContactUpdated;
+	$out.0.hire_date = str2date($in.0.hireDate,"yyyyMMdd");
+
+	return ALL;
+}
+
+// Called during component initialization.
+// function boolean init() {}
+
+// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
+// required by the transform. All resources allocated within this method should be released
+// by the postExecute() method.
+// function void preExecute() {}
+
+// Called only if transform() throws an exception.
+// function integer transformOnError(string errorMessage, string stackTrace) {}
+
+// Called during each graph run after the entire transform was executed. Should be used to free any resources
+// allocated within the preExecute() method.
+// function void postExecute() {}
+
+// Called to return a user-defined error message when an error occurs.
+// function string getMessage() {}
+]]></attr>
+</Node>
+<Node guiName="Input" guiX="70" guiY="25" id="RESTJOB_INPUT0" requestFormat="BINARY" restJobInput="true" type="RESTJOB_INPUT"/>
+<Node attachment="false" guiName="Output" guiX="945" guiY="150" id="RESTJOB_OUTPUT0" metadataName="true" responseFormat="CSV" restJobOutput="true" topLevelArray="true" type="RESTJOB_OUTPUT"/>
+<Edge fromNode="EMERGENCY_CONTACT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge0" inPort="Port 1 (slave)" metadata="Metadata1" outPort="Port 0 (output)" toNode="EXT_HASH_JOIN:1"/>
+<Edge fromNode="EMPLOYEES:0" guiBendpoints="" guiRouter="Manhattan" id="Edge3" inPort="Port 0 (driver)" metadata="Metadata0" outPort="Port 0 (output)" toNode="EXT_HASH_JOIN:0"/>
+<Edge fromNode="EXT_HASH_JOIN:0" guiBendpoints="" guiRouter="Manhattan" id="Edge1" inPort="Port 0 (in)" metadata="Metadata2" outPort="Port 0 (out)" toNode="MAP:0"/>
+<Edge fromNode="EXT_HASH_JOIN:1" guiBendpoints="" guiRouter="Manhattan" id="Edge6" inPort="Port 0 (in)" outPort="Port 1 (out)" toNode="RESTJOB_OUTPUT0:0"/>
+<Edge fromNode="MAP:0" guiBendpoints="" guiRouter="Manhattan" id="Edge5" inPort="Port 0 (in)" metadata="Metadata3" outPort="Port 0 (out)" toNode="DATABASE_WRITER:0"/>
+</Phase>
+</Graph>

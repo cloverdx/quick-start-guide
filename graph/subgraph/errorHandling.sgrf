@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Graph author="droben" created="Wed Dec 15 22:27:15 GMT 2021" guiVersion="7.0.0.15" id="1639609565072" licenseCode="Unlicensed" name="ourFirstLoad" nature="subgraph" showComponentDetails="true">
+<Global>
+<inputPorts>
+<singlePort connected="false" name="0"/>
+</inputPorts>
+<GraphParameters>
+<GraphParameter label="File URL" name="FILE_URL" public="true" required="true" value="${DATAOUT_DIR}/errorCustomers.log">
+<ComponentReference referencedComponent="WRITE_ERRORLOG" referencedProperty="fileURL"/>
+</GraphParameter>
+<GraphParameterFile fileURL="workspace.prm"/>
+</GraphParameters>
+<Dictionary/>
+</Global>
+<Phase number="1">
+<Node guiName="SubgraphInput" guiX="220" guiY="15" id="SUBGRAPH_INPUT" type="SUBGRAPH_INPUT">
+<Port guiY="149" name="0"/>
+<Port guiY="219" name="1"/>
+</Node>
+<Node guiName="SubgraphOutput" guiX="720" guiY="-2" id="SUBGRAPH_OUTPUT" type="SUBGRAPH_OUTPUT">
+<Port guiY="110" name="0"/>
+</Node>
+<Node append="true" fileURL="${FILE_URL}" guiName="write errorlog" guiX="395" guiY="175" id="WRITE_ERRORLOG" type="FLAT_FILE_WRITER"/>
+<Edge fromNode="SUBGRAPH_INPUT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge4" inPort="Port 0 (in)" outPort="Port 0 (out)" toNode="WRITE_ERRORLOG:0"/>
+</Phase>
+</Graph>

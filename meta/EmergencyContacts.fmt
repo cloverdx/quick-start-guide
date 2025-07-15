@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Record fieldDelimiter="|" name="EmergencyContacts" previewAttachment="${DATAIN_DIR}/EmergencyContacts.csv" previewAttachmentCharset="UTF-8" quoteChar="both" quotedStrings="false" recordDelimiter="\n" skipSourceRows="1" type="delimited">
+<Field name="ID" type="string"/>
+<Field name="EmergencyContact" type="string"/>
+<Field name="Phone" type="string"/>
+<Field eofAsDelimiter="true" format="yyyy-MM-dd" name="UpdatedOn" type="date"/>
+</Record>

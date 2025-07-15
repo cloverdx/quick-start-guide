@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Graph author="NickTaylor" created="Thu Jun 12 08:27:19 CEST 2025" guiVersion="7.0.0.15" id="1749718198642" licenseCode="CLCDSCLOVE72646208SP" name="example" nature="restJob" showComponentDetails="true">
+<Global>
+<EndpointSettings>
+<UrlPath>/example</UrlPath>
+<Category>Example</Category>
+<IconUrl>data-service/icons/example.png</IconUrl>
+<RequestMethod name="GET"/>
+<RequestParameter id="RestJobParameter0" location="query" name="string" type="string"/>
+<RequestParameter id="RestJobParameter1" location="query" name="integer" required="false" type="num_int"/>
+<RequestParameter id="RestJobParameter2" location="query" name="date" required="false" sensitive="false" type="date"/>
+<RequestParameter id="RestJobParameter3" location="query" name="boolean" required="true" type="bool"/>
+<RequestParameter id="RestJobParameter4" location="form_data" name="file input" required="false" type="text_file"/>
+</EndpointSettings>
+<RestJobResponseStatus>
+<JobError>
+<reasonPhrase>Job failed</reasonPhrase>
+<statusCode>500</statusCode>
+<ReasonPhrase>Job failed</ReasonPhrase>
+<StatusCode>500</StatusCode>
+</JobError>
+<Success>
+<statusCode>200</statusCode>
+<StatusCode>200</StatusCode>
+</Success>
+<ValidationError>
+<reasonPhrase>Request validation failed</reasonPhrase>
+<statusCode>400</statusCode>
+<ReasonPhrase>Request validation failed</ReasonPhrase>
+<StatusCode>400</StatusCode>
+</ValidationError>
+</RestJobResponseStatus>
+<Metadata id="Metadata0">
+<Record fieldDelimiter="|" name="requestEcho" recordDelimiter="\r\n" type="delimited">
+<Field name="requestBody" type="string"/>
+<Field name="requestClientIpAddress" type="string"/>
+<Field name="requestContentType" type="string"/>
+<Field name="requestEncoding" type="string"/>
+<Field name="requestHeaders" type="string"/>
+<Field name="requestMethod" type="string"/>
+<Field name="requestParameters" type="string"/>
+</Record>
+</Metadata>
+<GraphParameters>
+<GraphParameterFile fileURL="workspace.prm"/>
+</GraphParameters>
+<RichTextNote backgroundColor="FFFFB0" folded="false" fontSize="medium" height="250" id="Note0" textColor="444444" width="400" x="325" y="25">
+<attr name="text"><![CDATA[h3. REST Job Body
+[Example Request Echo|element://GET_JOB_INPUT0] demonstrates how to access HTTP context in CTL. Replace it with your own transformation logic.
+
+To use input parameters as a component attribute value use *${PARAM_NAME}*. See custom attribute *Custom_Attribute_Example* on [Example Request Echo|element://GET_JOB_INPUT0].
+
+In CTL you can access input parameters using the *getRequestParameter(PARAM_NAME)* function.
+
+To configure the Data Service use [Endpoint Configuration|action://com.cloveretl.gui/com.cloveretl.gui.actions.ChangeGraphEditorTabAction?index=0] tab.]]></attr>
+</RichTextNote>
+<Dictionary/>
+</Global>
+<Phase number="0">
+<Node Custom_Attribute_Example="${PARAM_NAME}" guiName="Example Request Echo" guiX="445" guiY="300" id="GET_JOB_INPUT0" type="GET_JOB_INPUT">
+<attr name="mapping"><![CDATA[function integer transform() {
+
+	//  Example CTL code shows how to access HTTP request/response.
+	//  Code bellow processes request using getRequest... CTL functions.
+	//  Similar function set exists for processing response (eg. setResponseBody(),
+	//  setResponseStatus(), etc.)
+
+	$out.0.requestClientIpAddress = getRequestClientIPAddress();
+	$out.0.requestContentType = getRequestContentType();
+	$out.0.requestEncoding = getRequestEncoding();
+ 	$out.0.requestMethod = getRequestMethod();
+	$out.0.requestHeaders = join(", ", getRequestHeaders());
+	$out.0.requestParameters = join(", ", getRequestParameters());
+	//$out.0.requestBody = getRequestBody(); // Can not be used with form parameters
+	//$out.0.id = getRequestParameter("id");  // Get value of REST Job Input parameter 'id'
+
+   //  It is also possible to use parameters and payloads as a component attribute values.
+   //  Use ${PARAM_NAME} in component attribute editor to get value of input parameter.
+   //  For reading payload as stream, use request:body as a URL for reader component.
+	return ALL;
+}]]></attr>
+<attr name="guiDescription"><![CDATA[Replace this example component]]></attr>
+</Node>
+<Node guiName="Input" guiX="70" guiY="25" id="RESTJOB_INPUT0" requestFormat="JSON" restJobInput="true" type="RESTJOB_INPUT"/>
+<Node attachment="false" guiName="Output" guiX="895" guiY="25" id="RESTJOB_OUTPUT0" metadataName="true" responseFormat="JSON" restJobOutput="true" topLevelArray="true" type="RESTJOB_OUTPUT"/>
+<Node guiName="GetJobInput" guiX="270" guiY="25" id="RequestParametersValidator" restJobInput="true" type="GET_JOB_INPUT">
+<attr name="mapping"><![CDATA[//#CTL2
+// Transforms input record into output record.
+function integer transform() {
+	if (isEmpty(getRequestParameter("boolean"))) { 
+		raiseError("Missing required request parameter: 'boolean'");
+	}
+	return ALL;
+}]]></attr>
+</Node>
+<Edge fromNode="GET_JOB_INPUT0:0" guiBendpoints="" guiRouter="Manhattan" id="Edge0" inPort="Port 0 (in)" metadata="Metadata0" outPort="Port 0 (out)" toNode="RESTJOB_OUTPUT0:0"/>
+</Phase>
+</Graph>

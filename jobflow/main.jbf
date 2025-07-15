@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Graph author="NickTaylor" created="Thu Jun 12 08:27:19 CEST 2025" guiVersion="7.0.0.15" id="1749722413383" licenseCode="CLCDSCLOVE72646208SP" name="main" nature="jobflow" showComponentDetails="true">
+<Global>
+<GraphParameters>
+<GraphParameterFile fileURL="workspace.prm"/>
+</GraphParameters>
+<Dictionary/>
+</Global>
+<Phase number="0">
+<Node guiName="EmployeeLoader" guiX="420" guiY="175" id="EMPLOYEE_LOADER" jobURL="${GRAPH_DIR}/EmployeeLoader.grf" type="EXECUTE_GRAPH">
+<attr name="inputMapping"><![CDATA[//#CTL2
+
+// Transforms input record into output record.
+function integer transform() {
+	$out.1.FILE_URL = $in.0.URL;
+	$out.0.executionLabel = $in.0.name;
+
+	return ALL;
+}
+
+// Called during component initialization.
+// function boolean init() {}
+
+// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
+// required by the transform. All resources allocated within this method should be released
+// by the postExecute() method.
+// function void preExecute() {}
+
+// Called only if transform() throws an exception.
+// function integer transformOnError(string errorMessage, string stackTrace) {}
+
+// Called during each graph run after the entire transform was executed. Should be used to free any resources
+// allocated within the preExecute() method.
+// function void postExecute() {}
+
+// Called to return a user-defined error message when an error occurs.
+// function string getMessage() {}
+]]></attr>
+</Node>
+<Node fileURL="${DATAIN_DIR}/Employees/" guiName="ListFiles" guiX="195" guiY="175" id="LIST_FILES" type="LIST_FILES"/>
+<Node guiName="Trash" guiX="695" guiY="175" id="TRASH" type="TRASH"/>
+<Edge fromNode="EMPLOYEE_LOADER:0" guiBendpoints="" guiRouter="Manhattan" id="Edge3" inPort="Port 0 (in)" outPort="Port 0 (out)" toNode="TRASH:0"/>
+<Edge fromNode="LIST_FILES:0" guiBendpoints="" guiRouter="Manhattan" id="Edge0" inPort="Port 0 (in)" outPort="Port 0 (out)" toNode="EMPLOYEE_LOADER:0"/>
+</Phase>
+</Graph>
